@@ -17,10 +17,15 @@ canvas {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
 }
 
-#scoreBoard {
+#gameInfo {
     position: absolute;
     top: -40px;
     right: 0;
+    display: flex;
+    gap: 15px;
+}
+
+#scoreBoard, #stageDisplay {
     font-family: 'Arial', sans-serif;
     font-size: 24px;
     font-weight: bold;
@@ -29,4 +34,8 @@ canvas {
     padding: 8px 15px;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+#stageDisplay {
+    color: #FF5722; /* Deep Orange to match invaders */
 }

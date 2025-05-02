@@ -1,5 +1,6 @@
 const canvas = document.getElementById('gameCanvas');
 const scoreBoard = document.getElementById('scoreBoard');
+const stageDisplay = document.getElementById('stageDisplay');
 const ctx = canvas.getContext('2d');
 
 // --- Game Configuration ---
@@ -12,6 +13,7 @@ const playerColor = '#607D8B'; // Blue Grey
 const invaderColor = '#FF5722'; // Deep Orange
 const bulletColor = '#009688'; // Teal
 let score = 0;
+let stage = 0;
 const backgroundColor = '#ffffff'; // White
 
 // --- Player ---
@@ -51,8 +53,11 @@ const invaderOffsetTop = 30;
 const invaderOffsetLeft = 30;
 const invaderRowCount = 3;
 const invaderColumnCount = 6;
-const invaderSpeed = 0.8; // How much they move down each frame initially
-const invaderSideSpeed = 0.5; // How much they move side to side
+const initialInvaderSpeed = 0.8; // Base speed for stage 0
+const initialInvaderSideSpeed = 0.5; // Base side speed for stage 0
+const speedIncreasePerStage = 0.3; // How much speed increases per stage
+let currentInvaderSpeed = initialInvaderSpeed;
+let currentInvaderSideSpeed = initialInvaderSideSpeed;
 let invaders = [];
 let invaderDirection = 1; // 1 for right, -1 for left
 
@@ -91,8 +96,8 @@ function moveInvaders() {
             lowestInvader = Math.max(lowestInvader, invader.y + invader.height);
             
             // Check if any invader hits the side edge
-            if ((invader.x + invader.width + invaderSideSpeed * invaderDirection > canvasWidth) || 
-                (invader.x + invaderSideSpeed * invaderDirection < 0)) {
+            if ((invader.x + invader.width + currentInvaderSideSpeed * invaderDirection > canvasWidth) || 
+                (invader.x + currentInvaderSideSpeed * invaderDirection < 0)) {
                 hitEdge = true;
             }
         }
@@ -103,11 +108,11 @@ function moveInvaders() {
         if (invader.status === 1) {
             // If edge was hit, move down and change direction
             if (hitEdge) {
-                invader.y += invaderSpeed * 10; // Move down more when hitting edge
+                invader.y += currentInvaderSpeed * 10; // Move down more when hitting edge
             }
             
             // Move side to side
-            invader.x += invaderSideSpeed * invaderDirection;
+            invader.x += currentInvaderSideSpeed * invaderDirection;
             
             // Check if invader reached bottom (game over condition)
             if (invader.y + invader.height > player.y) {
@@ -173,10 +178,10 @@ function collisionDetection() {
                     score += 10; // Increase score
                     bullets.splice(bulletIndex, 1); // Remove bullet
 
-                    // Check win condition
+                    // Check if all invaders are defeated
                     if (invaders.every(inv => inv.status === 0)) {
-                         console.log("YOU WIN!");
-                         document.location.reload(); // Reload to restart
+                        console.log("Stage completed!");
+                        advanceToNextStage();
                     }
                 }
             }
@@ -198,8 +203,9 @@ function gameLoop() {
     drawBullets();
     collisionDetection();
 
-    // Update Score Board
+    // Update Score Board and Stage Display
     scoreBoard.textContent = `Score: ${score}`;
+    stageDisplay.textContent = `Stage: ${stage}`;
 
     requestAnimationFrame(gameLoop); // Keep the loop going
 }
@@ -226,6 +232,43 @@ document.addEventListener('keyup', (e) => {
     }
 });
 
+// --- Stage Progression ---
+function advanceToNextStage() {
+    // Display stage clear message
+    showStageMessage(`STAGE ${stage} CLEAR!`);
+    
+    // Increment stage
+    stage++;
+    
+    // Increase speeds with more significant progression based on stage
+    currentInvaderSpeed = initialInvaderSpeed + (speedIncreasePerStage * stage);
+    currentInvaderSideSpeed = initialInvaderSideSpeed + (speedIncreasePerStage * stage / 2);
+    
+    console.log(`Stage ${stage} - Speed increased! Down: ${currentInvaderSpeed.toFixed(2)}, Side: ${currentInvaderSideSpeed.toFixed(2)}`);
+    
+    // Reset invader positions but keep the score
+    createInvaders();
+}
+
+// Display a temporary message in the center of the screen
+function showStageMessage(message) {
+    ctx.save();
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+    
+    ctx.font = 'bold 36px Arial';
+    ctx.fillStyle = '#FF5722';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(message, canvasWidth / 2, canvasHeight / 2);
+    
+    // Display for 1.5 seconds
+    setTimeout(() => {
+        ctx.restore();
+    }, 1500);
+}
+
 // --- Start Game ---
 createInvaders();
+showStageMessage(`STAGE ${stage} START!`);
 gameLoop();
