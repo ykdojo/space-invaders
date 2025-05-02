@@ -7,16 +7,26 @@ body {
     background-color: #f0f0f0; /* Light grey background */
 }
 
+.game-container {
+    position: relative;
+}
+
 canvas {
     border: 1px solid #ccc; /* Subtle border */
     background-color: #ffffff; /* White canvas */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
 }
 
 #scoreBoard {
     position: absolute;
-    top: 10px;
-    left: 10px;
-    font-family: sans-serif;
-    font-size: 18px;
-    color: #333;
+    top: -40px;
+    right: 0;
+    font-family: 'Arial', sans-serif;
+    font-size: 24px;
+    font-weight: bold;
+    color: #009688;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 8px 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
