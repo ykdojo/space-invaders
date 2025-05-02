@@ -51,9 +51,10 @@ const invaderOffsetTop = 30;
 const invaderOffsetLeft = 30;
 const invaderRowCount = 4;
 const invaderColumnCount = 8;
-const invaderSpeed = 1.5; // How much they move down each frame initially
+const invaderSpeed = 0.8; // How much they move down each frame initially
+const invaderSideSpeed = 0.5; // How much they move side to side
 let invaders = [];
-let invadersMoveDown = true; // Start by moving down
+let invaderDirection = 1; // 1 for right, -1 for left
 
 function createInvaders() {
     invaders = []; // Reset invaders
@@ -80,18 +81,46 @@ function drawInvaders() {
 }
 
 function moveInvaders() {
+    // Check if any active invader has reached the canvas edge
+    let hitEdge = false;
+    let lowestInvader = 0;
+    
     invaders.forEach(invader => {
         if (invader.status === 1) {
-             invader.y += invaderSpeed; // Move down
-
-             // Check if invader reached bottom (game over condition)
-             if (invader.y + invader.height > player.y) {
-                 // For simplicity, just stop the game for now
-                 console.log("GAME OVER - Invader reached player level");
-                 document.location.reload(); // Reload to restart
-             }
+            // Track the lowest invader for game over condition
+            lowestInvader = Math.max(lowestInvader, invader.y + invader.height);
+            
+            // Check if any invader hits the side edge
+            if ((invader.x + invader.width + invaderSideSpeed * invaderDirection > canvasWidth) || 
+                (invader.x + invaderSideSpeed * invaderDirection < 0)) {
+                hitEdge = true;
+            }
         }
     });
+    
+    // Move all invaders
+    invaders.forEach(invader => {
+        if (invader.status === 1) {
+            // If edge was hit, move down and change direction
+            if (hitEdge) {
+                invader.y += invaderSpeed * 10; // Move down more when hitting edge
+            }
+            
+            // Move side to side
+            invader.x += invaderSideSpeed * invaderDirection;
+            
+            // Check if invader reached bottom (game over condition)
+            if (invader.y + invader.height > player.y) {
+                console.log("GAME OVER - Invader reached player level");
+                document.location.reload(); // Reload to restart
+            }
+        }
+    });
+    
+    // Change direction if edge was hit
+    if (hitEdge) {
+        invaderDirection *= -1;
+    }
 }
 
 
