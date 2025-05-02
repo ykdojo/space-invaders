@@ -1,4 +1,5 @@
 const canvas = document.getElementById('gameCanvas');
+const scoreBoard = document.getElementById('scoreBoard');
 const ctx = canvas.getContext('2d');
 
 // --- Game Configuration ---
@@ -10,6 +11,7 @@ canvas.height = canvasHeight;
 const playerColor = '#607D8B'; // Blue Grey
 const invaderColor = '#FF5722'; // Deep Orange
 const bulletColor = '#009688'; // Teal
+let score = 0;
 const backgroundColor = '#ffffff'; // White
 
 // --- Player ---
@@ -139,6 +141,7 @@ function collisionDetection() {
                 ) {
                     // Collision!
                     invader.status = 0; // Mark invader as dead
+                    score += 10; // Increase score
                     bullets.splice(bulletIndex, 1); // Remove bullet
 
                     // Check win condition
@@ -166,6 +169,8 @@ function gameLoop() {
     drawBullets();
     collisionDetection();
 
+    // Update Score Board
+    scoreBoard.textContent = `Score: ${score}`;
 
     requestAnimationFrame(gameLoop); // Keep the loop going
 }

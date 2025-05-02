@@ -11,3 +11,12 @@ canvas {
     border: 1px solid #ccc; /* Subtle border */
     background-color: #ffffff; /* White canvas */
 }
+
+#scoreBoard {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-family: sans-serif;
+    font-size: 18px;
+    color: #333;
+}
